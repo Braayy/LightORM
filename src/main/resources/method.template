@@ -1,0 +1,4 @@
+@Override
+public {returnType} {methodName}({parameters}) throws SQLException {
+{body}
+}

@@ -1,0 +1,16 @@
+package {packageName};
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import com.jpereirax.lightorm.datasource.DataSource;
+
+import {superClassPackage};
+
+public class {className} implements {superClass} {
+
+    private final Connection connection = DataSource.getConnection();
+
+    {methods}
+}

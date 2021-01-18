@@ -15,6 +15,11 @@ public class BodyGeneratorBuilder {
         return this;
     }
 
+    public BodyGeneratorBuilder returnType(String returnType) {
+        this.generator.returnType = returnType;
+        return this;
+    }
+
     public BodyGenerator build() {
         return this.generator;
     }

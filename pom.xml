@@ -13,6 +13,7 @@
         <maven.compiler.version>3.8.1</maven.compiler.version>
 
         <hikaricp.version>3.4.5</hikaricp.version>
+        <javaparser.version>3.18.0</javaparser.version>
     </properties>
 
     <dependencies>
@@ -20,6 +21,11 @@
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <version>${hikaricp.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.javaparser</groupId>
+            <artifactId>javaparser-core</artifactId>
+            <version>${javaparser.version}</version>
         </dependency>
     </dependencies>
 

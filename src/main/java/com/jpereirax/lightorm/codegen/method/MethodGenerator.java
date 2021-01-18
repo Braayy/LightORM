@@ -9,11 +9,11 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.ElementFilter;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 
-import static com.jpereirax.lightorm.codegen.Constants.SINGLE_LINE_BREAK;
 import static com.jpereirax.lightorm.codegen.Constants.LINE_BREAK;
-import static com.jpereirax.lightorm.codegen.Constants.TAB;
 
 public class MethodGenerator implements Generator {
 
@@ -22,9 +22,13 @@ public class MethodGenerator implements Generator {
     @Override
     public String generate() {
         StringBuilder stringBuilder = new StringBuilder();
+        String template = template("method");
+
         List<ExecutableElement> executableElements = ElementFilter.methodsIn(element.getEnclosedElements());
 
         for (ExecutableElement executableElement : executableElements) {
+            String method = template;
+
             if (executableElement.getKind() != ElementKind.METHOD) continue;
 
             String methodName = executableElement.getSimpleName().toString();
@@ -42,17 +46,21 @@ public class MethodGenerator implements Generator {
             Query query = executableElement.getAnnotation(Query.class);
             Generator generator = BodyGenerator.builder()
                     .query(query)
+                    .returnType(returnType)
                     .build();
 
+            method = method
+                    .replace("{returnType}", returnType)
+                    .replace("{methodName}", methodName)
+                    .replace("{parameters}", formattedParameters(parameters))
+                    .replace("{body}", generator.generate());
+
             stringBuilder
-                    .append(TAB)
-                    .append(String.format("public %s %s(%s) throws SQLException {", returnType, methodName, formattedParameters(parameters)))
-                    .append(SINGLE_LINE_BREAK)
-                    .append(generator.generate())
-                    .append(SINGLE_LINE_BREAK);
+                    .append(method)
+                    .append(LINE_BREAK);
         }
 
-        return stringBuilder.append(TAB).append("}").append(LINE_BREAK).toString();
+        return stringBuilder.toString();
     }
 
     private String formattedParameters(Map<String, String> parameters) {

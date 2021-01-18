@@ -1,13 +1,11 @@
 package com.jpereirax.lightorm.codegen.klass;
 
-import com.jpereirax.lightorm.codegen.Constants;
+import com.github.javaparser.StaticJavaParser;
+import com.github.javaparser.ast.CompilationUnit;
 import com.jpereirax.lightorm.codegen.Generator;
 import com.jpereirax.lightorm.codegen.method.MethodGenerator;
 
 import javax.lang.model.element.Element;
-
-import static com.jpereirax.lightorm.codegen.Constants.LINE_BREAK;
-import static com.jpereirax.lightorm.codegen.Constants.TAB;
 
 public class KlassGenerator implements Generator {
 
@@ -17,32 +15,24 @@ public class KlassGenerator implements Generator {
 
     @Override
     public String generate() {
-        StringBuilder stringBuilder = new StringBuilder();
+        String template = template("klass");
 
-        stringBuilder
-                .append(String.format("package %s;", packageName))
-                .append(LINE_BREAK);
+        String superClass = className.replace("Impl", "");
+        String superClassPackage = packageName.replace("impl", superClass);
 
-        for (String defaultImport : Constants.DEFAULT_IMPORTS) {
-            stringBuilder
-                    .append(defaultImport)
-                    .append("\n");
-        }
-
-        stringBuilder
-                .append("\n")
-                .append(String.format("public class %s {", className))
-                .append(LINE_BREAK)
-                .append(TAB)
-                .append("private final Connection connection = DataSource.getConnection();")
-                .append(LINE_BREAK);
+        template = template
+                .replace("{packageName}", packageName)
+                .replace("{superClassPackage}", superClassPackage)
+                .replace("{className}", className)
+                .replace("{superClass}", superClass);
 
         Generator methodGenerator = MethodGenerator.builder()
                 .element(element)
                 .build();
-        stringBuilder.append(methodGenerator.generate());
+        template = template.replace("{methods}", methodGenerator.generate());
 
-        return stringBuilder.append("}").toString();
+        CompilationUnit compilationUnit = StaticJavaParser.parse(template);
+        return compilationUnit.toString();
     }
 
     public static KlassGeneratorBuilder builder() {

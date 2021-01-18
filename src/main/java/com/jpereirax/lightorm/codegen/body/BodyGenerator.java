@@ -2,30 +2,29 @@ package com.jpereirax.lightorm.codegen.body;
 
 import com.jpereirax.lightorm.annotation.Query;
 import com.jpereirax.lightorm.codegen.Generator;
-
-import static com.jpereirax.lightorm.codegen.Constants.TAB;
-import static com.jpereirax.lightorm.codegen.Constants.SINGLE_LINE_BREAK;
-import static com.jpereirax.lightorm.codegen.Constants.LINE_BREAK;
+import com.jpereirax.lightorm.exception.CodegenException;
+import com.jpereirax.lightorm.type.ResultSetTypeEnum;
 
 public class BodyGenerator implements Generator {
 
     protected Query query;
+    protected String returnType;
 
     @Override
     public String generate() {
-        String DOUBLE_TAB = TAB + TAB;
-        StringBuilder stringBuilder = new StringBuilder(DOUBLE_TAB);
+        StringBuilder template = new StringBuilder(template("body"));
+        String rawQuery = query.value().toUpperCase();
 
-        stringBuilder
-                .append(String.format("PreparedStatement preparedStatement = connection.prepareStatement(\"%s\");", query.value()))
-                .append(SINGLE_LINE_BREAK)
-                .append(DOUBLE_TAB)
-                .append("ResultSet resultSet = preparedStatement.executeQuery();")
-                .append(LINE_BREAK)
-                .append(DOUBLE_TAB)
-                .append("return \"\";");
+        if (!returnType.equals("void")) {
+            if (!rawQuery.startsWith("SELECT")) throw new CodegenException("Only SELECT Query can return object.");
+            if (!ResultSetTypeEnum.isNativeType(returnType)) throw new CodegenException("Return type not supported.");
 
-        return stringBuilder.toString();
+            ResultSetTypeEnum resultSetType = ResultSetTypeEnum.getResultSetTypeFromReturnType(returnType);
+            template
+                    .append(String.format("return %s;", resultSetType.getMethod().replace("?", "1")));
+        }
+
+        return template.toString().replace("{query}", rawQuery);
     }
 
     public static BodyGeneratorBuilder builder() {
