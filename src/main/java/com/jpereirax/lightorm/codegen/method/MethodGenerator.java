@@ -9,9 +9,8 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.ElementFilter;
-import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.jpereirax.lightorm.codegen.Constants.LINE_BREAK;
 
@@ -43,10 +42,21 @@ public class MethodGenerator implements Generator {
                 parameters.put(parameterType, parameterName);
             }
 
+            parameters = parameters
+                    .entrySet()
+                    .stream().sorted(Collections.reverseOrder(Map.Entry.comparingByKey()))
+                    .collect(Collectors.toMap(
+                            Map.Entry::getKey,
+                            Map.Entry::getValue,
+                            (oldValue, newValue) -> oldValue,
+                            LinkedHashMap::new
+                    ));
+
             Query query = executableElement.getAnnotation(Query.class);
             Generator generator = BodyGenerator.builder()
                     .query(query)
                     .returnType(returnType)
+                    .parameters(parameters)
                     .build();
 
             method = method
@@ -65,7 +75,10 @@ public class MethodGenerator implements Generator {
 
     private String formattedParameters(Map<String, String> parameters) {
         StringBuilder stringBuilder = new StringBuilder();
-        parameters.forEach((type, name) -> stringBuilder.append(String.format("%s %s", type, name)));
+        parameters.forEach((type, name) -> {
+            if (stringBuilder.length() > 0) stringBuilder.append(", ");
+            stringBuilder.append(String.format("%s %s", type, name));
+        });
         return stringBuilder.toString();
     }
 

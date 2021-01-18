@@ -2,6 +2,8 @@ package com.jpereirax.lightorm.codegen.body;
 
 import com.jpereirax.lightorm.annotation.Query;
 
+import java.util.Map;
+
 public class BodyGeneratorBuilder {
 
     private final BodyGenerator generator;
@@ -17,6 +19,11 @@ public class BodyGeneratorBuilder {
 
     public BodyGeneratorBuilder returnType(String returnType) {
         this.generator.returnType = returnType;
+        return this;
+    }
+
+    public BodyGeneratorBuilder parameters(Map<String, String> parameters) {
+        this.generator.parameters = parameters;
         return this;
     }
 
