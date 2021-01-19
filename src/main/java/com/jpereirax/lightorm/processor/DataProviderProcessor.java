@@ -15,6 +15,7 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.ElementFilter;
+import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 import java.io.IOException;
@@ -57,6 +58,8 @@ public class DataProviderProcessor extends AbstractProcessor {
                     .packageName(packageName)
                     .className(className)
                     .element(element)
+                    .typeUtils(processingEnv.getTypeUtils())
+                    .elementUtils(processingEnv.getElementUtils())
                     .build();
 
             writer.write(generator.generate());

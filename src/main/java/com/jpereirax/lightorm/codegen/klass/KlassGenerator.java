@@ -6,8 +6,13 @@ import com.jpereirax.lightorm.codegen.Generator;
 import com.jpereirax.lightorm.codegen.method.MethodGenerator;
 
 import javax.lang.model.element.Element;
+import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 
 public class KlassGenerator implements Generator {
+
+    protected Types typeUtils;
+    protected Elements elementUtils;
 
     protected String packageName;
     protected String className;
@@ -28,6 +33,7 @@ public class KlassGenerator implements Generator {
 
         Generator methodGenerator = MethodGenerator.builder()
                 .element(element)
+                .typeUtils(typeUtils)
                 .build();
         template = template.replace("{methods}", methodGenerator.generate());
 

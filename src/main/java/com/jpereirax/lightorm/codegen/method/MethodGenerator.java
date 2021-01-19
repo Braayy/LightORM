@@ -4,17 +4,20 @@ import com.jpereirax.lightorm.annotation.Query;
 import com.jpereirax.lightorm.codegen.Generator;
 import com.jpereirax.lightorm.codegen.body.BodyGenerator;
 
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.VariableElement;
+import javax.lang.model.element.*;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
+import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.jpereirax.lightorm.codegen.Constants.LINE_BREAK;
 
 public class MethodGenerator implements Generator {
+
+    protected Types typeUtils;
+    protected Elements elementUtils;
 
     protected Element element;
 
@@ -31,7 +34,9 @@ public class MethodGenerator implements Generator {
             if (executableElement.getKind() != ElementKind.METHOD) continue;
 
             String methodName = executableElement.getSimpleName().toString();
-            String returnType = executableElement.getReturnType().toString();
+
+            TypeMirror returnType = executableElement.getReturnType();
+            Element returnElement = typeUtils.asElement(returnType);
 
             Map<String, String> parameters = new WeakHashMap<>();
             List<? extends VariableElement> variableElements = executableElement.getParameters();
@@ -54,13 +59,15 @@ public class MethodGenerator implements Generator {
 
             Query query = executableElement.getAnnotation(Query.class);
             Generator generator = BodyGenerator.builder()
+                    .typeUtils(typeUtils)
                     .query(query)
                     .returnType(returnType)
                     .parameters(parameters)
+                    .returnElement(returnElement)
                     .build();
 
             method = method
-                    .replace("{returnType}", returnType)
+                    .replace("{returnType}", returnType.toString())
                     .replace("{methodName}", methodName)
                     .replace("{parameters}", formattedParameters(parameters))
                     .replace("{body}", generator.generate());

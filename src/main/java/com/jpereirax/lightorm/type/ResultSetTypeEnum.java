@@ -44,4 +44,8 @@ public enum ResultSetTypeEnum {
     public String setMethod() {
         return setMethod;
     }
+
+    public String[] getTypes() {
+        return types;
+    }
 }

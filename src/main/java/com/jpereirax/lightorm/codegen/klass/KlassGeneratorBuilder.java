@@ -1,6 +1,8 @@
 package com.jpereirax.lightorm.codegen.klass;
 
 import javax.lang.model.element.Element;
+import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 
 public class KlassGeneratorBuilder {
 
@@ -22,6 +24,16 @@ public class KlassGeneratorBuilder {
 
     public KlassGeneratorBuilder element(Element element) {
         this.generator.element = element;
+        return this;
+    }
+
+    public KlassGeneratorBuilder typeUtils(Types typeUtils) {
+        this.generator.typeUtils = typeUtils;
+        return this;
+    }
+
+    public KlassGeneratorBuilder elementUtils(Elements elementUtils) {
+        this.generator.elementUtils = elementUtils;
         return this;
     }
 
