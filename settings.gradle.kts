@@ -1,2 +1,2 @@
-rootProject.name = "lightorm2"
+rootProject.name = "lightorm"
 
