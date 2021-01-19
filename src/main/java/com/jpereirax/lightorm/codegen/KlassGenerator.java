@@ -1,22 +1,22 @@
-package com.jpereirax.lightorm.codegen.klass;
+package com.jpereirax.lightorm.codegen;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
-import com.jpereirax.lightorm.codegen.Generator;
-import com.jpereirax.lightorm.codegen.method.MethodGenerator;
+import lombok.Builder;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
+@Builder
 public class KlassGenerator implements Generator {
 
-    protected Types typeUtils;
-    protected Elements elementUtils;
+    private final Types typeUtils;
+    private final Elements elementUtils;
 
-    protected String packageName;
-    protected String className;
-    protected Element element;
+    private final String packageName;
+    private final String className;
+    private final Element element;
 
     @Override
     public String generate() {
@@ -39,9 +39,5 @@ public class KlassGenerator implements Generator {
 
         CompilationUnit compilationUnit = StaticJavaParser.parse(template);
         return compilationUnit.toString();
-    }
-
-    public static KlassGeneratorBuilder builder() {
-        return new KlassGeneratorBuilder();
     }
 }

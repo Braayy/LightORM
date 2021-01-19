@@ -1,9 +1,9 @@
-package com.jpereirax.lightorm.codegen.body;
+package com.jpereirax.lightorm.codegen;
 
 import com.jpereirax.lightorm.annotation.Query;
-import com.jpereirax.lightorm.codegen.Generator;
 import com.jpereirax.lightorm.exception.CodegenException;
 import com.jpereirax.lightorm.type.ResultSetTypeEnum;
+import lombok.Builder;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -17,17 +17,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.jpereirax.lightorm.codegen.Constants.SINGLE_LINE_BREAK;
-
+@Builder
 public class BodyGenerator implements Generator {
 
-    protected Types typeUtils;
+    private final Types typeUtils;
 
-    protected Query query;
-    protected TypeMirror returnType;
-    protected Map<String, String> parameters;
+    private final Query query;
+    private final TypeMirror returnType;
+    private final Map<String, String> parameters;
 
-    protected Element returnElement;
+    private final Element returnElement;
 
     @Override
     public String generate() {
@@ -64,9 +63,7 @@ public class BodyGenerator implements Generator {
 
             template
                     .append(String.format("%s response = new %s();", returnType, listReturnType))
-                    .append(SINGLE_LINE_BREAK)
-                    .append("while(rs.next()) {")
-                    .append(SINGLE_LINE_BREAK);
+                    .append("while(rs.next()) {");
         }
 
         if (executableElements.isEmpty()) throw new CodegenException(String.format("Cannot find constructor: %s.", returnElement.getSimpleName()));
@@ -91,23 +88,19 @@ public class BodyGenerator implements Generator {
             parametersName.add(String.format("_%s", name));
 
             template
-                    .append(String.format("%s _%s = new %s(%s);", defaultType, name, defaultType, method))
-                    .append(SINGLE_LINE_BREAK);
+                    .append(String.format("%s _%s = new %s(%s);", defaultType, name, defaultType, method));
         }
 
         String joinedParams = String.join(", ", parametersName);
         template
-                .append(String.format("%s object = new %s(%s);", returnObject, returnObject, joinedParams))
-                .append(SINGLE_LINE_BREAK);
+                .append(String.format("%s object = new %s(%s);", returnObject, returnObject, joinedParams));
 
         if (isList) {
             template
                     .append("response.add(object);")
-                    .append(SINGLE_LINE_BREAK)
-                    .append("}")
-                    .append(SINGLE_LINE_BREAK);
+                    .append("}");
         }
-        template.append("return response;");
+        template.append(String.format("return %s;", isList ? "response" : "object"));
     }
 
     private void generateBasicReturnType(StringBuilder template) {
@@ -136,10 +129,6 @@ public class BodyGenerator implements Generator {
                 statementParams.add(String.format("%s;", setMethod));
             });
         }
-        return String.join(SINGLE_LINE_BREAK, statementParams);
-    }
-
-    public static BodyGeneratorBuilder builder() {
-        return new BodyGeneratorBuilder();
+        return String.join("\n", statementParams);
     }
 }

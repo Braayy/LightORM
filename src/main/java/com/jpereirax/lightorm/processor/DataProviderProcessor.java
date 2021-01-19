@@ -2,7 +2,7 @@ package com.jpereirax.lightorm.processor;
 
 import com.jpereirax.lightorm.annotation.DataProvider;
 import com.jpereirax.lightorm.codegen.Generator;
-import com.jpereirax.lightorm.codegen.klass.KlassGenerator;
+import com.jpereirax.lightorm.codegen.KlassGenerator;
 import com.jpereirax.lightorm.exception.CodegenException;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -15,7 +15,6 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.ElementFilter;
-import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 import java.io.IOException;

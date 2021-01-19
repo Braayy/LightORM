@@ -1,10 +1,12 @@
-package com.jpereirax.lightorm.codegen.method;
+package com.jpereirax.lightorm.codegen;
 
 import com.jpereirax.lightorm.annotation.Query;
-import com.jpereirax.lightorm.codegen.Generator;
-import com.jpereirax.lightorm.codegen.body.BodyGenerator;
+import lombok.Builder;
 
-import javax.lang.model.element.*;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
@@ -12,14 +14,13 @@ import javax.lang.model.util.Types;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.jpereirax.lightorm.codegen.Constants.LINE_BREAK;
-
+@Builder
 public class MethodGenerator implements Generator {
 
-    protected Types typeUtils;
-    protected Elements elementUtils;
+    private final Types typeUtils;
+    private final Elements elementUtils;
 
-    protected Element element;
+    private final Element element;
 
     @Override
     public String generate() {
@@ -73,8 +74,7 @@ public class MethodGenerator implements Generator {
                     .replace("{body}", generator.generate());
 
             stringBuilder
-                    .append(method)
-                    .append(LINE_BREAK);
+                    .append(method);
         }
 
         return stringBuilder.toString();
@@ -87,9 +87,5 @@ public class MethodGenerator implements Generator {
             stringBuilder.append(String.format("%s %s", type, name));
         });
         return stringBuilder.toString();
-    }
-
-    public static MethodGeneratorBuilder builder() {
-        return new MethodGeneratorBuilder();
     }
 }

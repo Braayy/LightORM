@@ -2,16 +2,18 @@ package com.jpereirax.lightorm.datasource;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import lombok.Builder;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
+@Builder
 public class DataSource {
 
-    protected String dataSourceClassName;
-    protected String url;
-    protected String username;
-    protected String password;
+    private final String dataSourceClassName;
+    private final String url;
+    private final String username;
+    private final String password;
 
     private static HikariDataSource dataSource;
 
@@ -36,9 +38,5 @@ public class DataSource {
             exception.printStackTrace();
         }
         return null;
-    }
-
-    public static DataSourceBuilder builder() {
-        return new DataSourceBuilder();
     }
 }
