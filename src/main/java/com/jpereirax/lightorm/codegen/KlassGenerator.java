@@ -1,43 +1,52 @@
 package com.jpereirax.lightorm.codegen;
 
-import com.github.javaparser.StaticJavaParser;
-import com.github.javaparser.ast.CompilationUnit;
+import com.jpereirax.lightorm.datasource.DataSource;
+import com.squareup.javapoet.*;
 import lombok.Builder;
 
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
+import javax.lang.model.element.Modifier;
+import java.sql.Connection;
+import java.util.List;
 
 @Builder
-public class KlassGenerator implements Generator {
+public class KlassGenerator implements Generator<TypeSpec> {
 
-    private final Types typeUtils;
-    private final Elements elementUtils;
+    private final ProcessingEnvironment processingEnvironment;
 
     private final String packageName;
     private final String className;
     private final Element element;
 
     @Override
-    public String generate() {
-        String template = template("klass");
-
+    public TypeSpec generate() {
         String superClass = className.replace("Impl", "");
-        String superClassPackage = packageName.replace("impl", superClass);
+        String superClassPackage = packageName.replace(".impl", "");
 
-        template = template
-                .replace("{packageName}", packageName)
-                .replace("{superClassPackage}", superClassPackage)
-                .replace("{className}", className)
-                .replace("{superClass}", superClass);
-
-        Generator methodGenerator = MethodGenerator.builder()
-                .element(element)
-                .typeUtils(typeUtils)
+        FieldSpec connectionField = FieldSpec
+                .builder(Connection.class, "connection")
+                .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
+                .initializer(
+                        CodeBlock
+                                .builder()
+                                .add("$T.getConnection()", DataSource.class)
+                                .build()
+                )
                 .build();
-        template = template.replace("{methods}", methodGenerator.generate());
 
-        CompilationUnit compilationUnit = StaticJavaParser.parse(template);
-        return compilationUnit.toString();
+        Generator<List<MethodSpec>> methods = MethodGenerator.builder()
+                .processingEnvironment(processingEnvironment)
+                .element(element)
+                .build();
+
+        return TypeSpec.classBuilder(className)
+                .addModifiers(Modifier.PUBLIC)
+                .addSuperinterface(ClassName.get(superClassPackage, superClass))
+                .addField(connectionField)
+
+                .addMethods(methods.generate())
+
+                .build();
     }
 }

@@ -1,91 +1,99 @@
 package com.jpereirax.lightorm.codegen;
 
 import com.jpereirax.lightorm.annotation.Query;
+import com.squareup.javapoet.*;
 import lombok.Builder;
 
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.VariableElement;
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.*;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Builder
-public class MethodGenerator implements Generator {
+public class MethodGenerator implements Generator<List<MethodSpec>> {
 
-    private final Types typeUtils;
-    private final Elements elementUtils;
-
+    private final ProcessingEnvironment processingEnvironment;
     private final Element element;
 
     @Override
-    public String generate() {
-        StringBuilder stringBuilder = new StringBuilder();
-        String template = template("method");
+    public List<MethodSpec> generate() {
+        List<MethodSpec> methods = new ArrayList<>();
 
         List<ExecutableElement> executableElements = ElementFilter.methodsIn(element.getEnclosedElements());
-
         for (ExecutableElement executableElement : executableElements) {
-            String method = template;
-
             if (executableElement.getKind() != ElementKind.METHOD) continue;
 
             String methodName = executableElement.getSimpleName().toString();
-
             TypeMirror returnType = executableElement.getReturnType();
-            Element returnElement = typeUtils.asElement(returnType);
-
-            Map<String, String> parameters = new WeakHashMap<>();
-            List<? extends VariableElement> variableElements = executableElement.getParameters();
-            for (VariableElement parameter : variableElements) {
-                String parameterType = parameter.asType().toString();
-                String parameterName = parameter.getSimpleName().toString();
-
-                parameters.put(parameterType, parameterName);
-            }
-
-            parameters = parameters
-                    .entrySet()
-                    .stream().sorted(Collections.reverseOrder(Map.Entry.comparingByKey()))
-                    .collect(Collectors.toMap(
-                            Map.Entry::getKey,
-                            Map.Entry::getValue,
-                            (oldValue, newValue) -> oldValue,
-                            LinkedHashMap::new
-                    ));
+            TypeName returnTypeName = ParameterizedTypeName.get(returnType);
+            Element returnElement = processingEnvironment.getTypeUtils().asElement(returnType);
 
             Query query = executableElement.getAnnotation(Query.class);
-            Generator generator = BodyGenerator.builder()
-                    .typeUtils(typeUtils)
+            List<ParameterSpec> methodParams = methodParams(executableElement);
+            Map<String, String> codeBlockParams = codeBlockParams(executableElement);
+
+            Generator<CodeBlock> codeBlockGenerator = CodeBlockGenerator.builder()
+                    .processingEnvironment(processingEnvironment)
                     .query(query)
                     .returnType(returnType)
-                    .parameters(parameters)
+                    .parameters(codeBlockParams)
                     .returnElement(returnElement)
                     .build();
 
-            method = method
-                    .replace("{returnType}", returnType.toString())
-                    .replace("{methodName}", methodName)
-                    .replace("{parameters}", formattedParameters(parameters))
-                    .replace("{body}", generator.generate());
+            MethodSpec method = MethodSpec
+                    .methodBuilder(methodName)
+                    .addAnnotation(Override.class)
+                    .addException(SQLException.class)
+                    .addModifiers(Modifier.PUBLIC)
+                    .returns(returnTypeName)
+                    .addParameters(methodParams)
 
-            stringBuilder
-                    .append(method);
+                    .addCode(codeBlockGenerator.generate())
+
+                    .build();
+
+            System.out.println(method);
+
+            methods.add(method);
         }
 
-        return stringBuilder.toString();
+        return methods;
     }
 
-    private String formattedParameters(Map<String, String> parameters) {
-        StringBuilder stringBuilder = new StringBuilder();
-        parameters.forEach((type, name) -> {
-            if (stringBuilder.length() > 0) stringBuilder.append(", ");
-            stringBuilder.append(String.format("%s %s", type, name));
-        });
-        return stringBuilder.toString();
+    private List<ParameterSpec> methodParams(ExecutableElement executableElement) {
+        return executableElement.getParameters()
+                .stream()
+                .map(param ->
+                        ParameterSpec
+                                .builder(
+                                        ParameterizedTypeName.get(param.asType()),
+                                        param.getSimpleName().toString()
+                                )
+                                .build())
+                .collect(Collectors.toList());
+    }
+
+    private Map<String, String> codeBlockParams(ExecutableElement executableElement) {
+        Map<String, String> parameters = new WeakHashMap<>();
+        List<? extends VariableElement> variableElements = executableElement.getParameters();
+        for (VariableElement parameter : variableElements) {
+            String parameterType = parameter.asType().toString();
+            String parameterName = parameter.getSimpleName().toString();
+
+            parameters.put(parameterType, parameterName);
+        }
+
+        return parameters
+                .entrySet()
+                .stream().sorted(Collections.reverseOrder(Map.Entry.comparingByKey()))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (oldValue, newValue) -> oldValue,
+                        LinkedHashMap::new
+                ));
     }
 }

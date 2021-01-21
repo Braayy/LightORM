@@ -1,3 +1,0 @@
-PreparedStatement statement = connection.prepareStatement("{query}");
-{statementParams}
-ResultSet rs = statement.executeQuery();

@@ -4,12 +4,12 @@ import java.util.Arrays;
 
 public enum ResultSetTypeEnum {
 
-    INT("rs.getInt(?)", "statement.setInt(?1, ?2)", "int", "Integer"),
-    DOUBLE("rs.getDouble(?)", "statement.setDouble(?1, ?2)", "double", "Double"),
-    STRING("rs.getString(?)", "statement.setString(?1, ?2)", "String"),
-    LONG("rs.getLong(?)", "statement.setDouble(?1, ?2)", "double", "Double"),
-    FLOAT("rs.getFloat(?)", "statement.setFloat(?1, ?2)", "float", "Float"),
-    BOOLEAN("rs.getBoolean(?)", "statement.setBoolean(?1, ?2)", "boolean", "Boolean");
+    INT    ("rs.getInt"    , "statement.setInt"    , "int"    , "Integer"),
+    DOUBLE ("rs.getDouble" , "statement.setDouble" , "double" , "Double"),
+    STRING ("rs.getString" , "statement.setString" , "String"),
+    LONG   ("rs.getLong"   , "statement.setDouble" , "double" , "Double"),
+    FLOAT  ("rs.getFloat"  , "statement.setFloat"  , "float"  , "Float"),
+    BOOLEAN("rs.getBoolean", "statement.setBoolean", "boolean", "Boolean");
 
     private final String getMethod;
     private final String setMethod;

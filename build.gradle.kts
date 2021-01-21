@@ -14,7 +14,6 @@ repositories {
 
 dependencies {
     implementation("com.squareup:javapoet:1.13.0")
-    implementation("com.github.javaparser:javaparser-core:3.18.0")
     implementation("com.zaxxer:HikariCP:3.4.5")
 
     implementation("org.projectlombok:lombok:1.18.16")

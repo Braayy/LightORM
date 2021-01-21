@@ -4,6 +4,8 @@ import com.jpereirax.lightorm.annotation.DataProvider;
 import com.jpereirax.lightorm.codegen.Generator;
 import com.jpereirax.lightorm.codegen.KlassGenerator;
 import com.jpereirax.lightorm.exception.CodegenException;
+import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.TypeSpec;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
@@ -35,7 +37,7 @@ public class DataProviderProcessor extends AbstractProcessor {
 
         for (Element element : elements) {
             if (element.getKind() != ElementKind.INTERFACE) {
-                error("The annotation @DataProvider can only be applied on interfaces.", element);
+                error(element);
                 continue;
             }
 
@@ -53,15 +55,18 @@ public class DataProviderProcessor extends AbstractProcessor {
             JavaFileObject sourceFile = processingEnv.getFiler().createSourceFile(String.format("%s.%s", packageName, className));
             Writer writer = sourceFile.openWriter();
 
-            Generator generator = KlassGenerator.builder()
+            Generator<TypeSpec> generator = KlassGenerator.builder()
                     .packageName(packageName)
                     .className(className)
                     .element(element)
-                    .typeUtils(processingEnv.getTypeUtils())
-                    .elementUtils(processingEnv.getElementUtils())
+                    .processingEnvironment(processingEnv)
                     .build();
 
-            writer.write(generator.generate());
+            System.out.println(generator.generate());
+
+            JavaFile javaFile = JavaFile.builder(packageName, generator.generate()).build();
+            javaFile.writeTo(writer);
+
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -80,7 +85,7 @@ public class DataProviderProcessor extends AbstractProcessor {
         return String.format("%sImpl", element.getSimpleName().toString());
     }
 
-    private void error(String message, Element element) {
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, message, element);
+    private void error(Element element) {
+        processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "The annotation @DataProvider can only be applied on interfaces.", element);
     }
 }
