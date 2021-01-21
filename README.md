@@ -21,15 +21,15 @@ LightORM has annotation processors so that all the integration code with the dat
 <dependency>
     <groupId>com.jpereirax</groupId>
     <artifactId>lightorm</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.0-BETA</version>
 </dependency>
 ```
 
 - Gradle
 ```groovy
 dependencies {
-    implementation 'com.jpereirax:lightorm:0.1.0'
-    annotationProcessor 'com.jpereirax:lightorm:0.1.0'
+    implementation 'com.jpereirax:lightorm:0.1.0-BETA'
+    annotationProcessor 'com.jpereirax:lightorm:0.1.0-BETA'
 }
 ```
 
