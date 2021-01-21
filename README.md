@@ -1,4 +1,4 @@
-#LightORM
+# LightORM
 _A lightweight and performant Java ORM alternative._
 
 ![Java version](https://img.shields.io/static/v1?label=Java&message=1.8&color=Orange&style=for-the-badge)
@@ -30,7 +30,7 @@ dependencies {
 }
 ```
 
-##Samples
+## Samples
 
 User
 ```java
