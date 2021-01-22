@@ -24,11 +24,24 @@ subprojects {
     }
 
     dependencies {
-        implementation("org.projectlombok:lombok:1.18.16")
-        annotationProcessor("org.projectlombok:lombok:1.18.16")
+        val lombokVersion = "1.18.16"
+        val junitVersion = "5.7.0"
+        val junitPlatformVersion = "1.7.0"
+
+        implementation("org.projectlombok:lombok:$lombokVersion")
+        annotationProcessor("org.projectlombok:lombok:$lombokVersion")
+
+        testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
+        testImplementation("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
+        testImplementation("org.junit.vintage:junit-vintage-engine:$junitVersion")
+        testImplementation("org.junit.platform:junit-platform-launcher:$junitPlatformVersion")
     }
 
     tasks {
+        test {
+            useJUnitPlatform()
+        }
+
         shadowJar {
             archiveFileName.set("lightorm-${project.name}-$pVersion.jar")
         }

@@ -23,10 +23,7 @@ public class DataSource {
     public void openConnection() {
         HikariConfig config = new HikariConfig();
 
-        String rawConnectionUrl = configuration.getConnectionType().getUrl();
-        String connectionUrl = String.format(rawConnectionUrl, configuration.getHost(), configuration.getPort(), configuration.getDatabase());
-
-        config.setJdbcUrl(connectionUrl);
+        config.setJdbcUrl(configuration.getConnectionType().getUrl().make(configuration));
         config.setUsername(configuration.getUsername());
         config.setPassword(configuration.getPassword());
 
