@@ -133,6 +133,7 @@ public class CodeBlockGenerator implements Generator<CodeBlock> {
     private void addSimpleReturn(String rawReturnType) {
         ResultSetTypeEnum resultSetType = ResultSetTypeEnum.getResultSetTypeFromType(rawReturnType);
         codeBlock
+                .addStatement("rs.next()")
                 .addStatement("return $L(1)", resultSetType.getMethod());
     }
 
