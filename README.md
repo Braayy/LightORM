@@ -1,3 +1,5 @@
+<img src="https://github.com/JPereirax/LightORM/raw/main/icon.svg" height="230" alt="LightORM" title="LightORM" align="right"/>
+
 # LightORM
 _A lightweight and performant Java ORM alternative._
 
@@ -82,3 +84,8 @@ public interface UserDataProvider {
     User findByUUID(String uuid);
 }
 ```
+<br />
+<br />
+<br />
+
+<img src="https://github.com/JPereirax/LightORM/raw/main/logo.svg" width="500" alt="LightORM" title="LightORM"/>
