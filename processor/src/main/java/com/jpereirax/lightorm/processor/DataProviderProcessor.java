@@ -1,8 +1,8 @@
 package com.jpereirax.lightorm.processor;
 
-import com.jpereirax.lightorm.annotation.DataProvider;
-import com.jpereirax.lightorm.codegen.Generator;
 import com.jpereirax.lightorm.codegen.KlassGenerator;
+import com.jpereirax.lightorm.core.annotation.DataProvider;
+import com.jpereirax.lightorm.core.generator.Generator;
 import com.jpereirax.lightorm.exception.CodegenException;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
@@ -25,7 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-@SupportedAnnotationTypes({ "com.jpereirax.lightorm.annotation.DataProvider" })
+@SupportedAnnotationTypes({ "com.jpereirax.lightorm.core.annotation.DataProvider" })
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 public class DataProviderProcessor extends AbstractProcessor {
 
@@ -61,8 +61,6 @@ public class DataProviderProcessor extends AbstractProcessor {
                     .element(element)
                     .processingEnvironment(processingEnv)
                     .build();
-
-            System.out.println(generator.generate());
 
             JavaFile javaFile = JavaFile.builder(packageName, generator.generate()).build();
             javaFile.writeTo(writer);

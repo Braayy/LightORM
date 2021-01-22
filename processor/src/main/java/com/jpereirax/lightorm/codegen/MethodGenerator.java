@@ -1,6 +1,7 @@
 package com.jpereirax.lightorm.codegen;
 
-import com.jpereirax.lightorm.annotation.Query;
+import com.jpereirax.lightorm.core.annotation.Query;
+import com.jpereirax.lightorm.core.generator.Generator;
 import com.squareup.javapoet.*;
 import lombok.Builder;
 

@@ -1,6 +1,7 @@
 package com.jpereirax.lightorm.codegen;
 
-import com.jpereirax.lightorm.datasource.DataSource;
+import com.jpereirax.lightorm.core.datasource.DataSource;
+import com.jpereirax.lightorm.core.generator.Generator;
 import com.squareup.javapoet.*;
 import lombok.Builder;
 
@@ -30,7 +31,7 @@ public class KlassGenerator implements Generator<TypeSpec> {
                 .initializer(
                         CodeBlock
                                 .builder()
-                                .add("$T.getConnection()", DataSource.class)
+                                .add("$T.getInstance().getConnection()", DataSource.class)
                                 .build()
                 )
                 .build();

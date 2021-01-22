@@ -15,24 +15,46 @@ LightORM has annotation processors so that all the integration code with the dat
 
 - Maven
 ```xml
-<dependency>
-    <groupId>com.jpereirax</groupId>
-    <artifactId>lightorm</artifactId>
-    <version>0.1.0-BETA</version>
-</dependency>
+<dependencies>
+    <dependency>
+        <groupId>com.jpereirax.lightorm</groupId>
+        <artifactId>core</artifactId>
+        <version>0.1.0-BETA</version>
+    </dependency>
+</dependencies>
+
+<!-- MavenCompiler Plugin -->
+
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+                <annotationProcessorPaths>
+                    <annotationProcessorPath>
+                        <groupId>com.jpereirax.lightorm</groupId>
+                        <artifactId>processor</artifactId>
+                        <version>0.1.0-BETA</version>
+                    </annotationProcessorPath>
+                </annotationProcessorPaths>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
 ```
 
 - Gradle
 ```groovy
 dependencies {
-    implementation 'com.jpereirax:lightorm:0.1.0-BETA'
-    annotationProcessor 'com.jpereirax:lightorm:0.1.0-BETA'
+    implementation 'com.jpereirax.lightorm:core:0.1.0-BETA'
+    annotationProcessor 'com.jpereirax.lightorm:processor:0.1.0-BETA'
 }
 ```
 
 ## Samples
 
-User
+Return Object
 ```java
 public class User {
     
@@ -54,7 +76,7 @@ public class User {
 DataProvider
 ```java
 @DataProvider
-public interface userDataProvider {
+public interface UserDataProvider {
     
     @Query("SELECT NAME, LEVEL, RANK FROM USER WHERE UUID = ?")
     User findByUUID(String uuid);

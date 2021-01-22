@@ -1,4 +1,4 @@
-package com.jpereirax.lightorm.codegen;
+package com.jpereirax.lightorm.core.generator;
 
 @FunctionalInterface
 public interface Generator<T> {

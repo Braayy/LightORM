@@ -1,2 +1,3 @@
-rootProject.name = "lightorm"
+include("core", "processor")
 
+rootProject.name = "lightorm"
