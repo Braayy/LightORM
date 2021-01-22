@@ -2,6 +2,7 @@ package com.jpereirax.lightorm.codegen;
 
 import com.jpereirax.lightorm.core.annotation.Query;
 import com.jpereirax.lightorm.core.generator.Generator;
+import com.jpereirax.lightorm.type.ParameterType;
 import com.squareup.javapoet.*;
 import lombok.Builder;
 
@@ -34,7 +35,7 @@ public class MethodGenerator implements Generator<List<MethodSpec>> {
 
             Query query = executableElement.getAnnotation(Query.class);
             List<ParameterSpec> methodParams = methodParams(executableElement);
-            Map<String, String> codeBlockParams = codeBlockParams(executableElement);
+            List<ParameterType> codeBlockParams = codeBlockParams(executableElement);
 
             Generator<CodeBlock> codeBlockGenerator = CodeBlockGenerator.builder()
                     .processingEnvironment(processingEnvironment)
@@ -56,8 +57,6 @@ public class MethodGenerator implements Generator<List<MethodSpec>> {
 
                     .build();
 
-            System.out.println(method);
-
             methods.add(method);
         }
 
@@ -77,24 +76,21 @@ public class MethodGenerator implements Generator<List<MethodSpec>> {
                 .collect(Collectors.toList());
     }
 
-    private Map<String, String> codeBlockParams(ExecutableElement executableElement) {
-        Map<String, String> parameters = new WeakHashMap<>();
+    private List<ParameterType> codeBlockParams(ExecutableElement executableElement) {
+        List<ParameterType> parameters = new ArrayList<>();
         List<? extends VariableElement> variableElements = executableElement.getParameters();
         for (VariableElement parameter : variableElements) {
             String parameterType = parameter.asType().toString();
             String parameterName = parameter.getSimpleName().toString();
 
-            parameters.put(parameterType, parameterName);
+            parameters.add(
+                    ParameterType.builder()
+                            .type(parameterType)
+                            .name(parameterName)
+                            .build()
+            );
         }
 
-        return parameters
-                .entrySet()
-                .stream().sorted(Collections.reverseOrder(Map.Entry.comparingByKey()))
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (oldValue, newValue) -> oldValue,
-                        LinkedHashMap::new
-                ));
+        return parameters;
     }
 }

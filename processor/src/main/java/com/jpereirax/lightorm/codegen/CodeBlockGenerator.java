@@ -3,6 +3,7 @@ package com.jpereirax.lightorm.codegen;
 import com.jpereirax.lightorm.core.annotation.Query;
 import com.jpereirax.lightorm.core.generator.Generator;
 import com.jpereirax.lightorm.exception.CodegenException;
+import com.jpereirax.lightorm.type.ParameterType;
 import com.jpereirax.lightorm.type.ResultSetTypeEnum;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
@@ -21,7 +22,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -32,7 +32,7 @@ public class CodeBlockGenerator implements Generator<CodeBlock> {
 
     private final Query query;
     private final TypeMirror returnType;
-    private final Map<String, String> parameters;
+    private final List<ParameterType> parameters;
 
     private final Element returnElement;
     
@@ -48,10 +48,11 @@ public class CodeBlockGenerator implements Generator<CodeBlock> {
 
         setQueryParameters(rawQuery);
 
-        codeBlock.addStatement("$T rs = statement.executeQuery()", ResultSet.class);
-
         if (!rawReturnType.equals("void")) {
             if (!rawQuery.startsWith("SELECT")) throw new CodegenException("Only SELECT Query can return object.");
+
+            codeBlock
+                    .addStatement("$T rs = statement.executeQuery()", ResultSet.class);
 
             if (ResultSetTypeEnum.isNativeType(rawReturnType)) {
                 addSimpleReturn(rawReturnType);
@@ -59,6 +60,9 @@ public class CodeBlockGenerator implements Generator<CodeBlock> {
             }
 
             addComplexReturn(rawReturnType);
+        } else {
+            codeBlock
+                    .addStatement("statement.executeUpdate()");
         }
 
         return codeBlock.build();
@@ -143,13 +147,13 @@ public class CodeBlockGenerator implements Generator<CodeBlock> {
             if (numberOfParams != parameters.size()) throw new CodegenException("The number of parameters informed is not the same as necessary in the query.");
 
             AtomicInteger index = new AtomicInteger(1);
-            parameters.forEach((type, name) -> {
-                if (!ResultSetTypeEnum.isNativeType(type)) throw new CodegenException(String.format("Parameter type not supported: %s.", type));
+            parameters.forEach((parameter) -> {
+                if (!ResultSetTypeEnum.isNativeType(parameter.getType())) throw new CodegenException(String.format("Parameter type not supported: %s.", parameter.getType()));
 
-                ResultSetTypeEnum resultSetType = ResultSetTypeEnum.getResultSetTypeFromType(type);
+                ResultSetTypeEnum resultSetType = ResultSetTypeEnum.getResultSetTypeFromType(parameter.getType());
 
                 codeBlock
-                        .addStatement("$L($L, $L)", resultSetType.setMethod(), index.getAndIncrement(), name);
+                        .addStatement("$L($L, $L)", resultSetType.setMethod(), index.getAndIncrement(), parameter.getName());
             });
         }
     }

@@ -54,6 +54,22 @@ dependencies {
 
 ## Samples
 
+Connection Configuration
+```java
+public class DBConfiguration {
+    
+    public void setupConnection() {
+        DataSourceConfiguration configuration = DataSourceConfiguration.builder()
+                .connectionType(ConnectionType.H2)
+                .database("your_database")
+                .maxPoolSize(1)
+                .build();
+
+        new DataSource(configuration).openConnection();
+    }
+}
+```
+
 Return Object
 ```java
 public class User {

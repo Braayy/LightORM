@@ -23,11 +23,18 @@ public class DataSource {
     public void openConnection() {
         HikariConfig config = new HikariConfig();
 
-        config.setJdbcUrl(configuration.getConnectionType().getUrl().make(configuration));
+        ConnectionType connectionType = configuration.getConnectionType();
+
+        config.setDriverClassName(connectionType.getDriverClass());
+        config.setJdbcUrl(connectionType.getUrl().make(configuration));
         config.setUsername(configuration.getUsername());
         config.setPassword(configuration.getPassword());
 
         config.setMaximumPoolSize(configuration.getMaxPoolSize());
+
+        if (configuration.getProperties() != null && !configuration.getProperties().isEmpty()) {
+            configuration.getProperties().forEach(config::addDataSourceProperty);
+        }
 
         config.addDataSourceProperty("autoReconnect", "true");
         config.addDataSourceProperty("cachePrepStmts", "true");
