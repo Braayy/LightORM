@@ -21,7 +21,7 @@ LightORM has annotation processors so that all the integration code with the dat
     <dependency>
         <groupId>com.jpereirax.lightorm</groupId>
         <artifactId>core</artifactId>
-        <version>0.1.0-BETA</version>
+        <version>0.1.2-BETA</version>
     </dependency>
 </dependencies>
 
@@ -37,7 +37,7 @@ LightORM has annotation processors so that all the integration code with the dat
                     <annotationProcessorPath>
                         <groupId>com.jpereirax.lightorm</groupId>
                         <artifactId>processor</artifactId>
-                        <version>0.1.0-BETA</version>
+                        <version>0.1.2-BETA</version>
                     </annotationProcessorPath>
                 </annotationProcessorPaths>
             </configuration>
@@ -49,8 +49,8 @@ LightORM has annotation processors so that all the integration code with the dat
 - Gradle
 ```groovy
 dependencies {
-    implementation 'com.jpereirax.lightorm:core:0.1.0-BETA'
-    annotationProcessor 'com.jpereirax.lightorm:processor:0.1.0-BETA'
+    implementation 'com.jpereirax.lightorm:core:0.1.2-BETA'
+    annotationProcessor 'com.jpereirax.lightorm:processor:0.1.2-BETA'
 }
 ```
 
