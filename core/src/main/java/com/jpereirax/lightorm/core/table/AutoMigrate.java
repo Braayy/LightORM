@@ -4,6 +4,7 @@ import com.jpereirax.lightorm.core.annotation.Column;
 import com.jpereirax.lightorm.core.annotation.Table;
 import com.jpereirax.lightorm.core.datasource.DataSource;
 import com.jpereirax.lightorm.core.table.builder.SQLTableBuilder;
+import lombok.SneakyThrows;
 import org.reflections.Reflections;
 
 import java.lang.annotation.Annotation;
@@ -37,7 +38,7 @@ public class AutoMigrate {
     }
 
     private void analysisProject() {
-        Reflections reflections = new Reflections();
+        Reflections reflections = new Reflections(packageCaller());
         tables.addAll(reflections.getTypesAnnotatedWith(Table.class));
     }
 
@@ -57,5 +58,16 @@ public class AutoMigrate {
         }
 
         return columns;
+    }
+
+    @SneakyThrows
+    private String packageCaller() {
+        StackTraceElement[] elements = Thread.currentThread().getStackTrace();
+        for (StackTraceElement element : elements) {
+            if (!element.getClassName().startsWith("com.jpereirax.lightorm") && element.getClassName().indexOf("java.lang.Thread") != 0) {
+                return Class.forName(element.getClassName()).getPackage().getName();
+            }
+        }
+        return null;
     }
 }
