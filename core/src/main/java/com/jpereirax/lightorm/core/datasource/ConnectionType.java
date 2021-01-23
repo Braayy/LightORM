@@ -7,9 +7,18 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ConnectionType {
 
-    H2(configuration -> String.format("jdbc:h2:mem:%s", configuration.getDatabase()), "org.h2.Driver"),
-    MySQL(configuration -> defaultUrl("mysql", configuration), "com.mysql.cj.jdbc.Driver"),
-    PostgreSQL(configuration -> defaultUrl("postgresql", configuration), "org.postgresql.Driver");
+    H2(
+            configuration -> String.format("jdbc:h2:mem:%s", configuration.getDatabase()),
+            "org.h2.Driver"
+    ),
+    MySQL(
+            configuration -> defaultUrl("mysql", configuration),
+            "com.mysql.cj.jdbc.Driver"
+    ),
+    PostgreSQL(
+            configuration -> defaultUrl("postgresql", configuration),
+            "org.postgresql.Driver"
+    );
 
     private final ConnectionURL url;
     private final String driverClass;

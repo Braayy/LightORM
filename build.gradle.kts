@@ -6,7 +6,7 @@ plugins {
 }
 
 val groupPrefix = "com.jpereirax.lightorm"
-val pVersion = "0.1.0-BETA"
+val pVersion = "0.1.2-BETA"
 
 group = groupPrefix
 version = pVersion

@@ -1,5 +1,6 @@
 package com.jpereirax.lightorm.core.datasource;
 
+import com.jpereirax.lightorm.core.table.AutoMigrate;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.SneakyThrows;
@@ -42,11 +43,18 @@ public class DataSource {
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
 
         dataSource = new HikariDataSource(config);
+
+        startAutoMigration();
     }
 
     @SneakyThrows
     public Connection getConnection() {
         return dataSource.getConnection();
+    }
+
+    @SneakyThrows
+    public void startAutoMigration() {
+        new AutoMigrate().migrate();
     }
 
     public static DataSource getInstance() {
